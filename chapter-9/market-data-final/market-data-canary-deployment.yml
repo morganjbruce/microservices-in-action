@@ -1,0 +1,35 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: market-data-canary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: market-data
+        tier: backend
+        track: canary
+    spec:
+      containers:
+      - name: market-data
+        image: morganjbruce/market-data:v2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 10
+          timeoutSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 10
+          timeoutSeconds: 15
