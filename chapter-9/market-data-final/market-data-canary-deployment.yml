@@ -20,16 +20,16 @@ spec:
             cpu: 100m
             memory: 100Mi
         ports:
-        - containerPort: 5000
+        - containerPort: 8000
         livenessProbe:
           httpGet:
             path: /ping
-            port: 5000
+            port: 8000
           initialDelaySeconds: 10
           timeoutSeconds: 15
         readinessProbe:
           httpGet:
             path: /ping
-            port: 5000
+            port: 8000
           initialDelaySeconds: 10
           timeoutSeconds: 15
