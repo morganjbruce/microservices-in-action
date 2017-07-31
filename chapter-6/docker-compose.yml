@@ -1,0 +1,11 @@
+version: '2'
+services:
+  market-data:
+    build: ./market-data
+    mem_limit: 50m
+  holdings:
+    build: ./holdings
+    links:
+      - market-data
+    ports:
+      - 80:8000
