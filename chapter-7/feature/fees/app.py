@@ -1,13 +1,16 @@
-from flask import Flask
-
-app = Flask(__name__)
-
-
-@app.route("/")
-def hello():
-    return "Hello from FEES SERVICE ..."
+import json
+import datetime
+from nameko.events import EventDispatcher, event_handler
+from statsd import StatsClient
 
 
-@app.route("/health")
-def health():
-    return "ping"
+class FeesService:
+    name = "fees_service"
+    statsd = StatsClient('statsd-agent', 8125,
+                         prefix='simplebank-demo.fees')
+
+    @event_handler("market_service", "order_placed")
+    @statsd.timer('place_order')
+    def charge_fee(self, payload):
+        print("[{}] {} received order_placed event ... charging fee".format(
+            payload, self.name))

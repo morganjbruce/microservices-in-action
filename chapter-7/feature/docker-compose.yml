@@ -1,47 +1,103 @@
 version: '2.1'
 services:
   gateway:
-    container_name: simplebank-account-transactions
+    container_name: simplebank-gateway
+    command: tail -f /dev/null
     restart: always
     build: ./gateway
     ports:
       - 5001:5000
-  account-transactions:
-    container_name: simplebank-account-transactions
-    restart: always
-    build: ./account_transactions
-    ports:
-      - 5002:5000
-  fees:
-    container_name: simplebank-fees
-    restart: always
-    build: ./fees
-    ports:
-      - 5003:5000
-  market:
-    container_name: simplebank-market
-    restart: always
-    build: ./market
-    ports:
-      - 5004:5000
+    volumes:
+      - ./gateway:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
   orders:
     container_name: simplebank-orders
+    command: tail -f /dev/null
     restart: always
     build: ./orders
     ports:
+      - 5002:5000
+    volumes:
+      - ./orders:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+  account-transactions:
+    container_name: simplebank-account-transactions
+    command: tail -f /dev/null
+    restart: always
+    build: ./account_transactions
+    ports:
+      - 5003:5000
+    volumes:
+      - ./account_transactions:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+  fees:
+    container_name: simplebank-fees
+    command: tail -f /dev/null
+    restart: always
+    build: ./fees
+    ports:
+      - 5004:5000
+    volumes:
+      - ./fees:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+  market:
+    container_name: simplebank-market
+    command: tail -f /dev/null
+    restart: always
+    build: ./market
+    ports:
       - 5005:5000
+    volumes:
+      - ./market:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
   rabbitmq:
     container_name: simplebank-rabbitmq
     image: rabbitmq:3.6-management
     ports:
+      - "5673:5672"
       - "15673:15672"
   redis:
     container_name: simplebank-redis
     image: redis
     ports:
       - "6380:6379"
-  dd-agent:
-    container_name: simplebank-dd-agent
-    build: ./statsd-agent
+  statsd-agent:
+    container_name: simplebank-statsd-agent
+    build: ./statsd
     ports:
       - 8126:8125

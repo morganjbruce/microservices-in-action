@@ -1,4 +1,3 @@
-from random import choice
 from nameko.events import BROADCAST, EventDispatcher, event_handler
 from nameko.rpc import rpc
 from nameko.timer import timer
