@@ -1,6 +1,5 @@
 import json
 import datetime
-
 from nameko.events import EventDispatcher, event_handler
 from nameko.rpc import rpc, RpcProxy
 from statsd import StatsClient
@@ -9,6 +8,7 @@ from statsd import StatsClient
 class OrdersService:
     name = "orders_service"
     dispatch = EventDispatcher()
+
     accounts = RpcProxy("account_transactions_service")
     statsd = StatsClient('statsd-agent', 8125,
                          prefix='simplebank-demo.orders')

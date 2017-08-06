@@ -10,7 +10,7 @@ class FeesService:
                          prefix='simplebank-demo.fees')
 
     @event_handler("market_service", "order_placed")
-    @statsd.timer('place_order')
+    @statsd.timer('charge_fee')
     def charge_fee(self, payload):
         print("[{}] {} received order_placed event ... charging fee".format(
             payload, self.name))

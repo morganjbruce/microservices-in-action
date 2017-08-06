@@ -44,10 +44,10 @@ setup(
         'nameko>=2.6.0',
         'logstash_formatter>=0.5.16',
         'statsd>=3.2.1',
-        'raven>=6.1.0',
         "circuitbreaker>=1.0.1",
         'gutter>=0.5.0',
         'request-id>=0.2.1',
+        'nameko-sentry>=0.0.5',
     ],
 
     # List additional groups of dependencies here (e.g. development
