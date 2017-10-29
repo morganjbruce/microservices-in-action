@@ -1,0 +1,23 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins-slave
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: jenkins-slave
+      labels:
+        app: jenkins-slave
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkinsci/jnlp-slave
+          env:
+            - name: JENKINS_URL
+              value: http://jenkins-discovery.default.svc.cluster.local
+            - name: JENKINS_AGENT_NAME
+              value: jenkins-slave
+            - name: JENKINS_SECRET
+              value: abc123

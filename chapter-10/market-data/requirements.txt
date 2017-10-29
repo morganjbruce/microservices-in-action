@@ -1,0 +1,5 @@
+flask
+gunicorn==19.6.0
+nose
+gevent
+pytest
