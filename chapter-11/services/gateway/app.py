@@ -11,7 +11,7 @@ class Gateway:
 
     name = "gateway"
     orders = RpcProxy("orders_service")
-    statsd = StatsClient('statsd-agent', 9125,
+    statsd = StatsClient('statsd', 8125,
                          prefix='simplebank-demo.gateway')
 
     @http('POST', '/shares/sell')

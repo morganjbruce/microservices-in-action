@@ -96,6 +96,32 @@ services:
     image: redis
     ports:
       - "6380:6379"
+  statsd_exporter:
+    image: prom/statsd-exporter
+    command: "-statsd.mapping-config=/tmp/statsd_mapping.conf"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - "./metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+  prometheus:
+    image: prom/prometheus
+    command: "--config.file=/tmp/prometheus.yml --web.listen-address '0.0.0.0:9090'"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./metrics/prometheus.yml:/tmp/prometheus.yml"
+  statsd:
+    image: dockerana/statsd
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+    volumes:
+      - "./metrics/statsd_config.js:/src/statsd/config.js"
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3100:3000"
   # statsd:
   #   image: hopsoft/graphite-statsd
   #   container_name: simplebank-statsd
