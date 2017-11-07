@@ -1,8 +1,8 @@
 version: '2.1'
 services:
+
   gateway:
     container_name: simplebank-gateway
-    command: tail -f /dev/null
     restart: always
     build: ./gateway
     ports:
@@ -17,9 +17,9 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+
   orders:
     container_name: simplebank-orders
-    command: tail -f /dev/null
     restart: always
     build: ./orders
     ports:
@@ -34,9 +34,9 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+
   account-transactions:
     container_name: simplebank-account-transactions
-    command: tail -f /dev/null
     restart: always
     build: ./account_transactions
     ports:
@@ -51,9 +51,9 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+
   fees:
     container_name: simplebank-fees
-    command: tail -f /dev/null
     restart: always
     build: ./fees
     ports:
@@ -68,9 +68,9 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+
   market:
     container_name: simplebank-market
-    command: tail -f /dev/null
     restart: always
     build: ./market
     ports:
@@ -85,25 +85,29 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+
   rabbitmq:
     container_name: simplebank-rabbitmq
-    image: rabbitmq:3.6-management
+    image: deadtrickster/rabbitmq_prometheus
     ports:
       - "5673:5672"
       - "15673:15672"
+
   redis:
     container_name: simplebank-redis
     image: redis
     ports:
       - "6380:6379"
-  statsd_exporter:
-    image: prom/statsd-exporter
+
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.4.0
     command: "-statsd.mapping-config=/tmp/statsd_mapping.conf"
     ports:
       - "9102:9102"
       - "9125:9125/udp"
     volumes:
       - "./metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+
   prometheus:
     image: prom/prometheus
     command: "--config.file=/tmp/prometheus.yml --web.listen-address '0.0.0.0:9090'"
@@ -111,6 +115,7 @@ services:
       - "9090:9090"
     volumes:
       - "./metrics/prometheus.yml:/tmp/prometheus.yml"
+
   statsd:
     image: dockerana/statsd
     ports:
@@ -118,33 +123,9 @@ services:
       - "8126:8126"
     volumes:
       - "./metrics/statsd_config.js:/src/statsd/config.js"
-  grafana:
-    image: grafana/grafana
-    ports:
-      - "3100:3000"
-  # statsd:
-  #   image: hopsoft/graphite-statsd
-  #   container_name: simplebank-statsd
+
+  # grafana:
+  #   image: grafana/grafana
   #   ports:
-  #     - "81:80"
-  #     - "2003-2004:2003-2004"
-  #     - "2023-2024:2023-2024"
-  #     - "8125:8125/udp"
-  #     - "8126:8126"
-  # statsd-agent:
-  #   container_name: simplebank-statsd-agent
-  #   build: ./statsd-agent
-  #   ports:
-  #     - 8126:8125
-  # prometheus:
-  #   container_name: simplebank-prometheus
-  #   build: ./prometheus
-  #   ports:
-  #     - "9090:9090"
-  # statsd-exporter:
-  #   container_name: simplebank-statsd-exporter
-  #   build: ./statsd-exporter
-  #   ports:
-  #     - "9102:9102"
-  #     - "9125:9125/udp"
+  #     - "3900:3000"
 

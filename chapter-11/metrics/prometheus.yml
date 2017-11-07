@@ -1,13 +1,13 @@
 # my global config
 global:
-  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  scrape_interval:     5s
+  evaluation_interval: 10s
   # scrape_timeout is set to the global default (10s).
 
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
-      monitor: 'codelab-monitor'
+      monitor: 'simplebank-demo'
 
 # Alertmanager configuration
 alerting:
@@ -25,10 +25,26 @@ rule_files:
 # Here it's Prometheus itself.
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: 'prometheus'
+  - job_name: 'statsd_exporter'
 
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
 
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['statsd-exporter:9102']
+        labels:
+          exporter: 'statsd'
+
+    metrics_path: '/metrics'
+
+  - job_name: 'rabbitmq'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ['rabbitmq:15672']
+        labels:
+          exporter: 'rabbitmq'
+
+    metrics_path: '/api/metrics'

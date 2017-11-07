@@ -6,7 +6,7 @@ from statsd import StatsClient
 
 class FeesService:
     name = "fees_service"
-    statsd = StatsClient('statsd-agent', 8125,
+    statsd = StatsClient('statsd', 8125,
                          prefix='simplebank-demo.fees')
 
     @event_handler("market_service", "order_placed")

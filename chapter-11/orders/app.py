@@ -10,7 +10,7 @@ class OrdersService:
     dispatch = EventDispatcher()
 
     accounts = RpcProxy("account_transactions_service")
-    statsd = StatsClient('statsd-agent', 8125,
+    statsd = StatsClient('statsd', 8125,
                          prefix='simplebank-demo.orders')
 
     @rpc

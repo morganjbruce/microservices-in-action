@@ -9,7 +9,7 @@ from circuitbreaker import circuit
 
 class MarketService:
     name = "market_service"
-    statsd = StatsClient('statsd-agent', 8125,
+    statsd = StatsClient('statsd', 8125,
                          prefix='simplebank-demo.market')
 
     dispatch = EventDispatcher()
