@@ -124,8 +124,24 @@ services:
     volumes:
       - "./metrics/statsd_config.js:/src/statsd/config.js"
 
-  # grafana:
-  #   image: grafana/grafana
-  #   ports:
-  #     - "3900:3000"
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3900:3000"
 
+  alerts:
+    container_name: simplebank-alerts
+    restart: always
+    build: ./alerts
+    ports:
+      - 5006:5000
+    volumes:
+      - ./alerts:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
