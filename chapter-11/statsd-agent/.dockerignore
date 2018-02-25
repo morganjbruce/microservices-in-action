@@ -1,0 +1,6 @@
+.git
+.gitignore
+.dockerignore
+/log/*
+/tmp/*
+/test/reports/*
