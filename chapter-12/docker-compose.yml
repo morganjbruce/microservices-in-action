@@ -1,0 +1,147 @@
+version: '2.1'
+services:
+
+  gateway:
+    container_name: simplebank-gateway
+    restart: always
+    build: ./gateway
+    ports:
+      - 5001:5000
+    volumes:
+      - ./gateway:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+
+  orders:
+    container_name: simplebank-orders
+    restart: always
+    build: ./orders
+    ports:
+      - 5002:5000
+    volumes:
+      - ./orders:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+
+  account-transactions:
+    container_name: simplebank-account-transactions
+    restart: always
+    build: ./account_transactions
+    ports:
+      - 5003:5000
+    volumes:
+      - ./account_transactions:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+
+  fees:
+    container_name: simplebank-fees
+    restart: always
+    build: ./fees
+    ports:
+      - 5004:5000
+    volumes:
+      - ./fees:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+
+  market:
+    container_name: simplebank-market
+    restart: always
+    build: ./market
+    ports:
+      - 5005:5000
+    volumes:
+      - ./market:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+
+  rabbitmq:
+    container_name: simplebank-rabbitmq
+    image: deadtrickster/rabbitmq_prometheus
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+  redis:
+    container_name: simplebank-redis
+    image: redis
+    ports:
+      - "6380:6379"
+
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.4.0
+    command: "-statsd.mapping-config=/tmp/statsd_mapping.conf"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - "./metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+
+  prometheus:
+    image: prom/prometheus
+    command: "--config.file=/tmp/prometheus.yml --web.listen-address '0.0.0.0:9090'"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./metrics/prometheus.yml:/tmp/prometheus.yml"
+
+  statsd:
+    image: dockerana/statsd
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+    volumes:
+      - "./metrics/statsd_config.js:/src/statsd/config.js"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3900:3000"
+
+  alerts:
+    container_name: simplebank-alerts
+    restart: always
+    build: ./alerts
+    ports:
+      - 5006:5000
+    volumes:
+      - ./alerts:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
