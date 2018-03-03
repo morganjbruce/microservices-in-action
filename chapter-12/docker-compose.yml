@@ -126,6 +126,8 @@ services:
 
   grafana:
     image: grafana/grafana
+    volumes:
+      - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
     ports:
       - "3900:3000"
 
