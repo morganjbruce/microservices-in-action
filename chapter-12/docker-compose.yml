@@ -7,16 +7,25 @@ services:
     build: ./gateway
     ports:
       - 5001:5000
+    command: tail -f /dev/null
     volumes:
       - ./gateway:/usr/src/app
     links:
       - "rabbitmq:simplebank-rabbitmq"
+      - "fluentd"
+      - "jaeger"
     environment:
       RABBIT_PASSWORD: "guest"
       RABBIT_USER: "guest"
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "DEBUG"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.gateway
 
   orders:
     container_name: simplebank-orders
@@ -34,6 +43,12 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.orders
 
   account-transactions:
     container_name: simplebank-account-transactions
@@ -51,6 +66,12 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.account
 
   fees:
     container_name: simplebank-fees
@@ -68,6 +89,12 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.fees
 
   market:
     container_name: simplebank-market
@@ -85,6 +112,12 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.market
 
   rabbitmq:
     container_name: simplebank-rabbitmq
@@ -131,6 +164,30 @@ services:
     ports:
       - "3900:3000"
 
+  kibana:
+    image: kibana
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
+
+  elasticsearch:
+    image: elasticsearch
+    expose:
+      - 9200
+    ports:
+      - "9200:9200"
+
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
   alerts:
     container_name: simplebank-alerts
     restart: always
@@ -147,3 +204,39 @@ services:
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+
+  profile:
+    container_name: simplebank-profile
+    restart: always
+    build: ./profile
+    ports:
+      - 5007:5000
+    volumes:
+      - ./profile:/usr/src/app
+    links:
+      - "jaeger"
+
+  settings:
+    container_name: simplebank-settings
+    restart: always
+    build: ./settings
+    ports:
+      - 5008:5000
+    volumes:
+      - ./settings:/usr/src/app
+    links:
+      - "jaeger"
+
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    ports:
+       - 5775:5775/udp
+       - 6831:6831/udp
+       - 6832:6832/udp
+       - 5778:5778
+       - 16686:16686
+       - 14268:14268
+       - 9411:9411
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: "9411"

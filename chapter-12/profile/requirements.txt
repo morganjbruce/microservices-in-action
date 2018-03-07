@@ -1,0 +1,4 @@
+Flask==0.12.0
+requests==2.18.4
+jaeger-client==3.7.1
+Flask-Opentracing==0.1.8
