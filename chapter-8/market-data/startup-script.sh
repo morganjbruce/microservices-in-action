@@ -34,7 +34,7 @@ chown -R app:app /opt/app
 cat >/etc/supervisor/conf.d/market-data-app.conf << EOF
 [program:app]
 directory=/opt/app/chapter-8/market-data
-command=/opt/app/chapter-8/market-data/env/bin/gunicorn main:app --bind 0.0.0.0:8080
+command=/opt/app/chapter-8/market-data/env/bin/gunicorn -c config.py app:app --bind 0.0.0.0:8080
 autostart=true
 autorestart=true
 user=app
