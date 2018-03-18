@@ -48,9 +48,6 @@ class Gateway:
         self.logger.info("contacting orders service", extra={
             "uuid": uuid})
 
-        # import pdb
-        # pdb.set_trace()
-
         res = u"{}".format(uuid)
         return self.orders.sell_shares(res)
 

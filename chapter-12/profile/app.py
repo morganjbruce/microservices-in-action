@@ -1,8 +1,12 @@
+from urlparse import urljoin
+
 import opentracing
 import requests
 from flask import Flask, jsonify, request
 from opentracing.ext import tags
 from opentracing.propagation import Format
+from opentracing_instrumentation.request_context import (get_current_span,
+                                                         span_in_context)
 
 from lib.tracing import init_tracer
 
@@ -10,25 +14,38 @@ app = Flask(__name__)
 tracer = init_tracer('simplebank-profile')
 
 
-@app.route('/profile')
-def pull_requests():
-    span_ctx = tracer.extract(Format.HTTP_HEADERS, request.headers)
-    span_tags = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER}
-    # Fetch a list of pull requests on the opentracing repository
-    # Fetch a list of pull requests on the opentracing repository
-    jsontest_url = "http://ip.jsontest.com/"
+@app.route('/profile/<uuid:uuid>')
+def profile(uuid):
+    with tracer.start_span('settings') as span:
+        span.set_tag('uuid', uuid)
+        with span_in_context(span):
+            ip = get_ip(uuid)
+            settings = get_user_settings(uuid)
+            return jsonify({'ip': ip, 'settings': settings})
 
-    with tracer.start_span('settings', child_of=span_ctx, tags=span_tags):
-        with tracer.start_span('jsontest', child_of=span_ctx) as span:
-            span.set_tag("http.url", jsontest_url)
+
+def get_ip(uuid):
+    with tracer.start_span('get_ip', child_of=get_current_span()) as span:
+        span.set_tag('uuid', uuid)
+        with span_in_context(span):
+            jsontest_url = "http://ip.jsontest.com/"
             r = requests.get(jsontest_url)
-            span.set_tag("http.status_code", r.status_code)
+            return r.json()
 
-        with tracer.start_span('parse-json', child_of=span_ctx) as span:
-            json = r.json()
-            span.set_tag("ip", len(json))
 
-    return jsonify(json)
+def get_user_settings(uuid):
+    settings_url = urljoin("http://settings:5000/settings/", "{}".format(uuid))
+
+    span = get_current_span()
+    span.set_tag(tags.HTTP_METHOD, 'GET')
+    span.set_tag(tags.HTTP_URL, settings_url)
+    span.set_tag(tags.SPAN_KIND, tags.SPAN_KIND_RPC_CLIENT)
+    span.set_tag('uuid', uuid)
+    headers = {}
+    tracer.inject(span, Format.HTTP_HEADERS, headers)
+
+    r = requests.get(settings_url, headers=headers)
+    return r.json()
 
 
 if __name__ == "__main__":

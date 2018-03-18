@@ -7,7 +7,6 @@ services:
     build: ./gateway
     ports:
       - 5001:5000
-    command: tail -f /dev/null
     volumes:
       - ./gateway:/usr/src/app
     links:
@@ -215,6 +214,7 @@ services:
       - ./profile:/usr/src/app
     links:
       - "jaeger"
+      - "settings"
 
   settings:
     container_name: simplebank-settings

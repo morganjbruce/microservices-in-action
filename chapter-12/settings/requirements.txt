@@ -1,7 +1,6 @@
 Flask==0.12.0
 requests==2.18.4
 jaeger-client==3.7.1
-Flask-Opentracing==0.1.8
 opentracing>=1.2,<2
 opentracing_instrumentation>=2.2,<3
 
