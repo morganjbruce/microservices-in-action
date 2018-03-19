@@ -1,0 +1,11 @@
+AMQP_URI: amqp://${RABBIT_USER:guest}:${RABBIT_PASSWORD:guest}@${RABBIT_HOST:localhost}:${RABBIT_PORT:5672}/
+WEB_SERVER_ADDRESS: '0.0.0.0:5000'
+RPC_EXCHANGE: 'simplebank-rpc'
+# LOGGING:
+#     version: 1
+#     handlers:
+#         console:
+#             class: logging.StreamHandler
+#     root:
+#         level: ${LOG_LEVEL:INFO}
+#         handlers: [console]
