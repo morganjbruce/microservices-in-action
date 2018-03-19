@@ -215,6 +215,12 @@ services:
     links:
       - "jaeger"
       - "settings"
+      - "fluentd"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.profile
 
   settings:
     container_name: simplebank-settings

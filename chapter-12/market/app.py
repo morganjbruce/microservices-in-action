@@ -1,30 +1,21 @@
 import datetime
 import json
-import logging
 import time
 from random import randint
 
 import requests
 from circuitbreaker import circuit
-from logstash_formatter import LogstashFormatterV1
 from nameko.events import EventDispatcher, event_handler
 from nameko.rpc import rpc
-from statsd import StatsClient
+
+from simplebank.chassis import init_logger, init_statsd
 
 
 class MarketService:
     name = "market_service"
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.market')
-
+    statsd = init_statsd('simplebank-demo.market', 'statsd')
+    logger = init_logger()
     dispatch = EventDispatcher()
-
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = LogstashFormatterV1()
-
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
 
     @event_handler("orders_service", "order_created")
     @statsd.timer('request_reservation')

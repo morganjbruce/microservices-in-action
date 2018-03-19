@@ -8,14 +8,19 @@ from opentracing.propagation import Format
 from opentracing_instrumentation.request_context import (get_current_span,
                                                          span_in_context)
 
-from lib.tracing import init_tracer
+from simplebank.chassis import init_logger, init_statsd, init_tracer
 
 app = Flask(__name__)
 tracer = init_tracer('simplebank-profile')
+statsd = init_statsd('simplebank.profile', 'statsd')
+logger = init_logger()
 
 
 @app.route('/profile/<uuid:uuid>')
+@statsd.timer('profile')
 def profile(uuid):
+    logger.debug("this is a debug message from profile", extra={"uuid": uuid})
+
     with tracer.start_span('settings') as span:
         span.set_tag('uuid', uuid)
         with span_in_context(span):
@@ -24,7 +29,9 @@ def profile(uuid):
             return jsonify({'ip': ip, 'settings': settings})
 
 
+@statsd.timer('get_ip')
 def get_ip(uuid):
+    logger.info("getting ip", extra={"uuid": uuid})
     with tracer.start_span('get_ip', child_of=get_current_span()) as span:
         span.set_tag('uuid', uuid)
         with span_in_context(span):
@@ -33,7 +40,9 @@ def get_ip(uuid):
             return r.json()
 
 
+@statsd.timer('get_user_settings')
 def get_user_settings(uuid):
+    logger.info("getting user settings", extra={"uuid": uuid})
     settings_url = urljoin("http://settings:5000/settings/", "{}".format(uuid))
 
     span = get_current_span()

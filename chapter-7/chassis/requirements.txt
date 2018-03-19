@@ -5,4 +5,3 @@ gutter>=0.5.0
 request-id>=0.2.1
 statsd>=3.2.1
 nameko-sentry>=0.0.5
-
