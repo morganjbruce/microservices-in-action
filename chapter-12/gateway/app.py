@@ -1,31 +1,21 @@
 import datetime
 import json
-import logging
 import time
 import uuid
 
-from logstash_formatter import LogstashFormatterV1
 from nameko.rpc import RpcProxy, rpc
 from nameko.web.handlers import http
-
-from statsd import StatsClient
 from werkzeug.wrappers import Request, Response
+
+from simplebank.chassis import init_logger, init_statsd
 
 
 class Gateway:
 
     name = "gateway"
-
     orders = RpcProxy("orders_service")
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.gateway')
-
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = LogstashFormatterV1()
-
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    statsd = init_statsd('simplebank-demo.gateway', 'statsd')
+    logger = init_logger()
 
     @http('POST', '/shares/sell')
     @statsd.timer('sell_shares')

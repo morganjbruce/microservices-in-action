@@ -1,25 +1,17 @@
 import datetime
 import json
-import logging
 import time
 from random import randint
 
-from logstash_formatter import LogstashFormatterV1
 from nameko.rpc import rpc
-from statsd import StatsClient
+
+from simplebank.chassis import init_logger, init_statsd
 
 
 class AccountTransactionsService:
     name = "account_transactions_service"
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.account-transactions')
-
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = LogstashFormatterV1()
-
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    statsd = init_statsd('simplebank-demo.account-transactions', 'statsd')
+    logger = init_logger()
 
     @rpc
     @statsd.timer('request_reservation')
