@@ -6,7 +6,7 @@ from statsd import StatsClient
 
 
 def init_statsd(prefix=None, host=None, port=8125):
-    statsd = StatsClient(prefix, host, port)
+    statsd = StatsClient(host, port, prefix=prefix)
     return statsd
 
 
