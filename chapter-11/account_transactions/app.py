@@ -1,13 +1,12 @@
 import json
 import datetime
 from nameko.rpc import rpc
-from statsd import StatsClient
+from simplebank.chassis import init_logger, init_statsd
 
 
 class AccountTransactionsService:
     name = "account_transactions_service"
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.account-transactions')
+    statsd = init_statsd('simplebank-demo.account-transactions', 'statsd')
 
     @rpc
     @statsd.timer('request_reservation')

@@ -1,8 +1,10 @@
-import json
 import datetime
+import json
+
 from nameko.events import EventDispatcher, event_handler
-from nameko.rpc import rpc, RpcProxy
-from statsd import StatsClient
+from nameko.rpc import RpcProxy, rpc
+
+from simplebank.chassis import init_logger, init_statsd
 
 
 class OrdersService:
@@ -10,8 +12,7 @@ class OrdersService:
     dispatch = EventDispatcher()
 
     accounts = RpcProxy("account_transactions_service")
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.orders')
+    statsd = init_statsd('simplebank-demo.orders', 'statsd')
 
     @rpc
     @statsd.timer('sell_shares')

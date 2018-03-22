@@ -1,18 +1,19 @@
 import datetime
-import uuid
 import json
+import uuid
+
+from nameko.rpc import RpcProxy, rpc
 from nameko.web.handlers import http
-from nameko.rpc import rpc, RpcProxy
 from werkzeug.wrappers import Request, Response
-from statsd import StatsClient
+
+from simplebank.chassis import init_logger, init_statsd
 
 
 class Gateway:
 
     name = "gateway"
     orders = RpcProxy("orders_service")
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.gateway')
+    statsd = init_statsd('simplebank-demo.gateway', 'statsd')
 
     @http('POST', '/shares/sell')
     @statsd.timer('sell_shares')

@@ -1,16 +1,17 @@
-import json
 import datetime
+import json
+
 import requests
-from nameko.rpc import rpc
-from nameko.events import EventDispatcher, event_handler
-from statsd import StatsClient
 from circuitbreaker import circuit
+from nameko.events import EventDispatcher, event_handler
+from nameko.rpc import rpc
+
+from simplebank.chassis import init_logger, init_statsd
 
 
 class MarketService:
     name = "market_service"
-    statsd = StatsClient('statsd', 8125,
-                         prefix='simplebank-demo.market')
+    statsd = init_statsd('simplebank-demo.market', 'statsd')
 
     dispatch = EventDispatcher()
 
