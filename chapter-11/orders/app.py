@@ -19,9 +19,6 @@ class OrdersService:
     def sell_shares(self, request):
         payload = request
 
-        # import pdb
-        # pdb.set_trace()
-
         # event: emit order created event
         self.__create_event("order_created", payload)
 
