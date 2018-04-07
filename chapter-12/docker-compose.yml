@@ -1,0 +1,248 @@
+version: '2.1'
+services:
+
+  gateway:
+    container_name: simplebank-gateway
+    restart: always
+    build: ./gateway
+    ports:
+      - 5001:5000
+    volumes:
+      - ./gateway:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+      - "fluentd"
+      - "jaeger"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "DEBUG"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.gateway
+
+  orders:
+    container_name: simplebank-orders
+    restart: always
+    build: ./orders
+    ports:
+      - 5002:5000
+    volumes:
+      - ./orders:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.orders
+
+  account-transactions:
+    container_name: simplebank-account-transactions
+    restart: always
+    build: ./account_transactions
+    ports:
+      - 5003:5000
+    volumes:
+      - ./account_transactions:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.account
+
+  fees:
+    container_name: simplebank-fees
+    restart: always
+    build: ./fees
+    ports:
+      - 5004:5000
+    volumes:
+      - ./fees:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.fees
+
+  market:
+    container_name: simplebank-market
+    restart: always
+    build: ./market
+    ports:
+      - 5005:5000
+    volumes:
+      - ./market:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+      LOG_LEVEL: "INFO"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.market
+
+  rabbitmq:
+    container_name: simplebank-rabbitmq
+    image: deadtrickster/rabbitmq_prometheus
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+  redis:
+    container_name: simplebank-redis
+    image: redis
+    ports:
+      - "6380:6379"
+
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.4.0
+    command: "-statsd.mapping-config=/tmp/statsd_mapping.conf"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - "./metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+
+  prometheus:
+    image: prom/prometheus
+    command: "--config.file=/tmp/prometheus.yml --web.listen-address '0.0.0.0:9090'"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./metrics/prometheus.yml:/tmp/prometheus.yml"
+
+  statsd:
+    image: dockerana/statsd
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+    volumes:
+      - "./metrics/statsd_config.js:/src/statsd/config.js"
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
+    ports:
+      - "3900:3000"
+
+  kibana:
+    image: kibana
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
+
+  elasticsearch:
+    image: elasticsearch
+    expose:
+      - 9200
+    ports:
+      - "9200:9200"
+
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
+  alerts:
+    container_name: simplebank-alerts
+    restart: always
+    build: ./alerts
+    ports:
+      - 5006:5000
+    volumes:
+      - ./alerts:/usr/src/app
+    links:
+      - "rabbitmq:simplebank-rabbitmq"
+    environment:
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+
+  profile:
+    container_name: simplebank-profile
+    restart: always
+    build: ./profile
+    ports:
+      - 5007:5000
+    volumes:
+      - ./profile:/usr/src/app
+    links:
+      - "jaeger"
+      - "settings"
+      - "fluentd"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: simplebank.profile
+
+  settings:
+    container_name: simplebank-settings
+    restart: always
+    build: ./settings
+    ports:
+      - 5008:5000
+    volumes:
+      - ./settings:/usr/src/app
+    links:
+      - "jaeger"
+
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    ports:
+       - 5775:5775/udp
+       - 6831:6831/udp
+       - 6832:6832/udp
+       - 5778:5778
+       - 16686:16686
+       - 14268:14268
+       - 9411:9411
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: "9411"

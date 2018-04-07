@@ -1,0 +1,12 @@
+nameko>=2.6.0
+logstash_formatter>=0.5.1
+circuitbreaker>=1.0.1
+gutter>=0.5.0
+request-id>=0.2.1
+statsd>=3.2.1
+nameko-sentry>=0.0.5
+Flask==0.12.0
+requests==2.18.4
+jaeger-client==3.7.1
+opentracing>=1.2,<2
+opentracing_instrumentation>=2.2,<3

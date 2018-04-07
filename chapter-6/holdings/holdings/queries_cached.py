@@ -2,6 +2,7 @@ import requests
 import logging
 from cachetools import cached, TTLCache
 
+
 class MarketDataClient(object):
 
     logger = logging.getLogger(__name__)
@@ -9,7 +10,8 @@ class MarketDataClient(object):
     base_url = 'http://market-data:8000'
 
     def _make_request(self, url):
-        response = requests.get(f"{self.base_url}/{url}", headers={'content-type': 'application/json'})
+        response = requests.get(
+            f"{self.base_url}/{url}", headers={'content-type': 'application/json'})
         return response.json()
 
     @cached(cache)
