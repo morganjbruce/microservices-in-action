@@ -2,7 +2,6 @@ version: '2.1'
 services:
   gateway:
     container_name: simplebank-gateway
-    command: tail -f /dev/null
     restart: always
     build: ./gateway
     ports:
@@ -19,7 +18,6 @@ services:
       RABBIT_MANAGEMENT_PORT: "15672"
   orders:
     container_name: simplebank-orders
-    command: tail -f /dev/null
     restart: always
     build: ./orders
     ports:
@@ -36,7 +34,6 @@ services:
       RABBIT_MANAGEMENT_PORT: "15672"
   account-transactions:
     container_name: simplebank-account-transactions
-    command: tail -f /dev/null
     restart: always
     build: ./account_transactions
     ports:
@@ -53,7 +50,6 @@ services:
       RABBIT_MANAGEMENT_PORT: "15672"
   fees:
     container_name: simplebank-fees
-    command: tail -f /dev/null
     restart: always
     build: ./fees
     ports:
@@ -70,7 +66,6 @@ services:
       RABBIT_MANAGEMENT_PORT: "15672"
   market:
     container_name: simplebank-market
-    command: tail -f /dev/null
     restart: always
     build: ./market
     ports:
