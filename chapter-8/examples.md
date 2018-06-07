@@ -229,5 +229,4 @@ gcloud beta compute instance-groups managed rolling-action start-update \
   market-data-service-group \
   --version template=market-data-service-template \
   --region europe-west1
-the original version
 ```
