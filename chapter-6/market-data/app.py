@@ -1,8 +1,6 @@
-import os
 import socket
-import time
-from flask import Flask
-from flask import jsonify
+
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
@@ -12,9 +10,11 @@ PRICES = {
     'ABC': {'Code': 'ABC', 'Price': 1.17}
 }
 
+
 @app.route('/ping', methods=["GET"])
 def ping():
     return socket.gethostname()
+
 
 @app.route('/prices/<code>', methods=["GET"])
 def price(code):
@@ -24,10 +24,12 @@ def price(code):
     else:
         return ('Not found', 404)
 
+
 @app.route('/prices', methods=["GET"])
 def all_prices():
-    raise Exception
-    # return jsonify(list(d.values()))
+    #raise Exception
+    return jsonify(list(PRICES.values()))
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')

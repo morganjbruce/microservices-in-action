@@ -1,10 +1,10 @@
-import requests
 import logging
-from cachetools import cached, TTLCache
+
+import requests
+from cachetools import TTLCache, cached
 
 
 class MarketDataClient(object):
-
     logger = logging.getLogger(__name__)
     cache = TTLCache(maxsize=10, ttl=5*60)
     base_url = 'http://market-data:8000'
@@ -16,7 +16,7 @@ class MarketDataClient(object):
 
     @cached(cache)
     def all_prices(self):
-        logger.debug("Making request to get all_prices")
+        self.logger.debug("Making request to get all_prices")
         return self._make_request("prices")
 
     def price(self, code):

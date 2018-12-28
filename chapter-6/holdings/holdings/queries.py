@@ -1,7 +1,7 @@
 from holdings.clients import MarketDataClient
 
-class Holdings(object):
 
+class Holdings(object):
     holdings = [
         {'Code': 'BHP', 'Quantity': 1000},
         {'Code': 'GOOG', 'Quantity': 100},
@@ -14,7 +14,7 @@ class Holdings(object):
     def all(self):
         prices = self.market_data.all_prices()
 
-        return [_value(h) for h in self.holdings]
+        return [self._value(h, prices) for h in self.holdings]
 
     def _value(self, holding, prices):
         price = next(p for p in prices if p['Code'] == holding['Code'])
