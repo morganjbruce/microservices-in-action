@@ -1,12 +1,15 @@
-import requests
 import logging
+
+import requests
+
 
 class MarketDataClient(object):
 
     base_url = 'http://market-data:8000'
 
     def _make_request(self, url):
-        response = requests.get(f"{self.base_url}/{url}", headers={'content-type': 'application/json'}, timeout=5)
+        response = requests.get(
+            f"{self.base_url}/{url}", headers={'content-type': 'application/json'}, timeout=5)
         return response.json()
 
     def all_prices(self):
