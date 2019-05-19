@@ -8,4 +8,4 @@ services:
     links:
       - market-data
     ports:
-      - 80:8000
+      - 80:8001
