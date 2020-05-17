@@ -1,5 +1,3 @@
-from urlparse import urljoin
-
 import opentracing
 import requests
 from flask import Flask, jsonify, request
@@ -9,6 +7,7 @@ from opentracing_instrumentation.request_context import (get_current_span,
                                                          span_in_context)
 
 from simplebank.chassis import init_logger, init_statsd, init_tracer
+from urllib.parse import urljoin
 
 app = Flask(__name__)
 tracer = init_tracer('simplebank-profile')
