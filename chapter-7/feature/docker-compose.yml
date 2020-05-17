@@ -1,9 +1,10 @@
-version: '2.1'
+version: '3'
 services:
   gateway:
+    build:
+      context: ./gateway
     container_name: simplebank-gateway
     restart: always
-    build: ./gateway
     ports:
       - 5001:5000
     volumes:
@@ -17,9 +18,10 @@ services:
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
   orders:
+    build:
+      context: ./orders
     container_name: simplebank-orders
     restart: always
-    build: ./orders
     ports:
       - 5002:5000
     volumes:
@@ -33,9 +35,10 @@ services:
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
   account-transactions:
+    build:
+      context: ./account_transactions
     container_name: simplebank-account-transactions
     restart: always
-    build: ./account_transactions
     ports:
       - 5003:5000
     volumes:
@@ -49,9 +52,10 @@ services:
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
   fees:
+    build:
+      context: ./fees
     container_name: simplebank-fees
     restart: always
-    build: ./fees
     ports:
       - 5004:5000
     volumes:
@@ -65,9 +69,10 @@ services:
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
   market:
+    build:
+      context: ./market
     container_name: simplebank-market
     restart: always
-    build: ./market
     ports:
       - 5005:5000
     volumes:
