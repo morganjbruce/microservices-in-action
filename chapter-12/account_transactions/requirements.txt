@@ -5,7 +5,7 @@ gutter>=0.5.0
 request-id>=0.2.1
 statsd>=3.2.1
 nameko-sentry>=0.0.5
-Flask==0.12.0
+Flask==1.0
 requests==2.18.4
 jaeger-client==3.7.1
 opentracing>=1.2,<2
