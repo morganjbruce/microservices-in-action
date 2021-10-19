@@ -41,7 +41,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
     install_requires=[
-        'nameko==2.12.0',
+        'nameko==2.14.0',
         'logstash_formatter==0.5.17',
         'circuitbreaker==1.3.0',
         'gutter==0.5.0',
